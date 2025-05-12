@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,400,700&display=swap" rel="stylesheet">
+    <title>Codex Test</title>
+</head>
+<body>
+
+    <header class="header container">
+        <button class="header__bars material-symbols-outlined">
+            menu
+        </button>
+    </header>
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav">
+        <nav>
+            <ul class="mobile-nav__menu">
+                <li>
+                    <a class="mobile-nav__link" href="/index.html#about">About</a>
+                </li>
+                <li>
+                    <a class="mobile-nav__link" href="/codex.html">Codex</a>
+                </li>
+                <li>
+                    <a class="mobile-nav__link" href="/index.html#featured">Work</a>
+                </li>
+                <li>
+                    <a class="mobile-nav__link" href="/index.html#contact">Contact</a>
+                </li>
+                <li class="mobile-nav__link-line">
+                </li>
+                <li>
+                    <button aria-label="theme-toggle btn"
+                            id="theme-toggle"
+                            class="mobile-nav__sun material-symbols-outlined">
+                        light_mode
+                    </button>
+                </li>
+                <li>
+                    <a class="mobile-nav__btn btn" href="#">Resume</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </div>
+    <!-- Mobile Navigation End -->
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div id="codex" class="codex">
+            <!-- Content will be inserted by JavaScript -->
+        </div>
+    </div>
+
+
+
+
+
+    <script type="module" src="/main.js"></script>
+    <script type="module" src="/codex.js"></script>
+
+
+</body>
+</html>

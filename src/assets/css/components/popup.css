@@ -1,0 +1,81 @@
+/* Popup container */
+.popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 90%; /* Default width for smaller screens */
+    max-width: 300px; /* Maximum width */
+    color: var(--clr-slate400); background-color: var(--clr-dark); /* Set a background color */
+    border-radius: 15px;
+    border: 2px solid #1e293b; /* Optional: border for styling */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow effect */
+    padding: 15px;
+    z-index: 1000; /* Makes sure the popup appears above other content */
+    display: none; /* Initially hidden */
+}
+
+/* Popup content */
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.popup h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.popup p {
+    margin: 10px 0;
+}
+
+.popup a {
+    font-size: 1.25rem;
+}
+
+.popup .popup-button {
+    align-self: flex-end; /* Position the button to the right */
+}
+
+
+.close-btn:hover {
+    background-color: #0056b3; /* Darker shade when hovering */
+}
+
+/* Responsive adjustments for the popup */
+
+/* xs */
+@media (min-width: 475px) {
+    .popup {
+        width: 80%; /* Increase width for larger screens */
+    }
+}
+
+/* sm */
+@media (min-width: 640px) {
+    .popup {
+        width: 70%; /* Decrease width for medium screens */
+    }
+}
+
+/* md */
+@media (min-width: 768px) {
+    .popup {
+        width: 60%; /* Adjust width for larger devices */
+    }
+}
+
+/* lg */
+@media (min-width: 1024px) {
+    .popup {
+        width: 50%; /* Larger screen devices get narrower popups */
+    }
+}
+
+/* xl */
+@media (min-width: 1280px) {
+    .popup {
+        width: 40%; /* Even narrower on very large screens */
+    }
+}

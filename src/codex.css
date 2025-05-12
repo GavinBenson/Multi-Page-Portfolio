@@ -1,0 +1,159 @@
+.codex {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.codex__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.codex__title {
+    font-size: var(--size-2xl);
+    color: var(--clr-light);
+}
+
+.codex__description {
+    max-width: 60ch;
+    font-size: var(--size-sm);
+    color: var(--clr-slate600);
+}
+
+.codex__hr {
+    border-color: var(--clr-slate800);
+}
+
+.codex__img-wrapper {
+    max-width: 50%;
+}
+
+.codex__subtitle {
+    font-size: var(--size-sm);
+    color: var(--clr-slate400);
+}
+
+.codex__list {
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.codex__ul-container {
+    display: flex;
+    gap: 3rem;
+}
+
+.codex__ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    list-style-type: '\1F44D';
+    padding-left: 1em;
+    flex: 1;
+}
+
+.codex__list {
+    font-size: var(--size-sm);
+    color: var(--clr-slate600);
+}
+
+    .codex__list::before {
+        content: '';
+        margin-left: 0.5em;
+    }
+
+/* xs */
+@media (min-width: 475px) {
+    .codex {
+        gap: 1.5rem;
+    }
+
+    .codex__content {
+        gap: 1.5rem;
+    }
+
+    .codex__title {
+        font-size: var(--size-3xl);
+    }
+
+    .codex__description {
+        font-size: var(--size-base);
+    }
+
+    .codex__subtitle {
+        font-size: var(--size-base);
+    }
+
+    .codex__list {
+        font-size: var(--size-base);
+    }
+}
+
+/* sm */
+@media (min-width: 640px) {
+    .codex__img-wrapper {
+        margin: 0 auto;
+    }
+
+    .codex__img {
+        width: 28.6875rem;
+    }
+}
+
+/* md */
+/* @media (min-width: 768px) {} */
+
+/* lg */
+@media (min-width: 1024px) {
+    .codex {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .codex__title {
+        font-size: var(--size-4xl);
+    }
+
+    .codex__description {
+        font-size: var(--size-lg);
+    }
+
+    .codex__subtitle {
+        font-size: var(--size-lg);
+    }
+
+    .codex__list {
+        font-size: var(--size-lg);
+    }
+}
+
+/* xl */
+@media (min-width: 1280px) {
+    .codex__content {
+        gap: 2rem;
+    }
+
+    .codex__title {
+        font-size: var(--size-5xl);
+    }
+
+    .codex__description {
+        font-size: var(--size-xl);
+    }
+
+    .codex__subtitle {
+        font-size: var(--size-xl);
+    }
+
+    .codex__list {
+        font-size: var(--size-xl);
+    }
+
+    .codex__img {
+        width: 30.75rem;
+    }
+}
+
+/* 2xl */
+/* @media (min-width: 1536px) {} */
