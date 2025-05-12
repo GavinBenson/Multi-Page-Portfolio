@@ -201,7 +201,7 @@
             display: flex;
             flex-direction: column;
             gap: 1em;
-            list-style-type: '\1F44D';
+            list-style-type: none;
             padding-left: 1em;
             margin: 0 auto;
             text-align: left;
