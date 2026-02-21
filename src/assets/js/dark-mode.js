@@ -15,8 +15,7 @@ const darkMode = () => {
     if (savedTheme) {
         applyTheme(savedTheme);
     } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyTheme(prefersDark ? 'darkMode' : 'lightMode');
+        applyTheme('lightMode');
     }
 
     // 2. Click handler to toggle themes

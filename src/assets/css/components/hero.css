@@ -12,10 +12,27 @@
     border-radius: 50%;
     width: 6rem;
     height: 6rem;
+    object-fit: cover;
 }
 
+.hero__divider {
+    border: none;
+    border-top: 2px solid var(--clr-indigo);
+    width: 75%;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+.hero__titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+
 .hero__subtitle {
-    color: var(--clr-slate800);
+    color: var(--clr-slate400);
     font-size: var(--size-base);
     line-height: 0.9;
 }
@@ -31,7 +48,7 @@
 .hero__description {
     max-width: 60ch;
     font-size: var(--size-sm);
-    color: var(--clr-slate600);
+    color: var(--clr-slate400);
 }
 
 .hero__btn {
@@ -113,7 +130,7 @@
     }
 
     .hero__title {
-        font-size: var(--size-9xl);
+        font-size: var(--size-6xl);
     }
 
     .hero__description {

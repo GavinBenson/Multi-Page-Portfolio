@@ -13,7 +13,7 @@
 }
 
 .header__bars {
-    color: var(--clr-light);
+    color: var(--clr-slate400);
     width: var(--size-2xl);
     height: var(--size-2xl);
     display: block;
@@ -39,7 +39,7 @@
         font-size: var(--size-xs);
         text-decoration: none;
         font-weight: 600;
-        color: var(--clr-slate600);
+        color: var(--clr-slate400);
         letter-spacing: -0.05em;
         transition: color 0.3s;
     }
@@ -49,13 +49,13 @@
     }
 
     .header__line {
-        border: 1px solid var(--clr-slate800);
+        border: 1px solid var(--clr-slate400);
         padding-top: 1.5em;
     }
 
     .header__sun {
         display: block;
-        color: var(--clr-slate600);
+        color: var(--clr-slate400);
         width: var(--size-base);
         height: var(--size-base);
     }
