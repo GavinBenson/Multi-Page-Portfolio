@@ -23,6 +23,11 @@
     position: relative;
 }
 
+.work__ul {
+    list-style-type: '';
+    padding-right: 2em;
+}
+
 .work__img-wrapper::after {
     content: '';
     background-color: rgba(79, 70, 229, 0.14);
