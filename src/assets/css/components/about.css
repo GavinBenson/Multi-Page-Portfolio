@@ -49,7 +49,7 @@
     display: flex;
     flex-direction: column;
     gap: 1em;
-    list-style-type: '\1F44D';
+    list-style-type: '-';
     padding-left: 1em;
     flex: 1;
 }
