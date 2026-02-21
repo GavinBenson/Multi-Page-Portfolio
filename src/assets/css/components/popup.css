@@ -79,3 +79,9 @@
         width: 40%; /* Even narrower on very large screens */
     }
 }
+
+@media (max-width: 764px) {
+    .popup {
+        display: none !important;
+    }
+}

@@ -60,4 +60,5 @@ function setupCodex() {
     });
 }
 import './assets/css/components/codex.css'
+import '/assets/css/components/header.css'
 setupCodex();
