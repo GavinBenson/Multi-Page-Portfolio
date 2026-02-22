@@ -71,56 +71,25 @@
         visibility: visible;
     }
 
-
         .mobile-nav__menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             gap: 2rem;
         }
 
         .mobile-nav__link {
             font-size: var(--size-lg);
             color: var(--clr-light);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
 
-        .mobile-nav__link:hover {
-            color: var(--clr-slate400);
         }
 
         .mobile-nav__link-line {
             width: 100%;
-            height: 1px;
-            background-color: var(--clr-slate800);
-            margin: 1rem 0;
         }
 
         .mobile-nav__sun, 
         .header__sun {
-            background: transparent;
-            border: none;
             color: var(--clr-light);
-            font-size: 1.5rem;
-            cursor: pointer;
         }
 
-        .btn {
-            display: inline-block;
-            background-color: transparent;
-            color: var(--clr-light);
-            border: 1px solid var(--clr-slate800);
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: var(--clr-slate800);
-        }
 
         /* Main Content Area - Full width and centered */
         .main-content {
@@ -220,23 +189,20 @@
             max-width: 300px;
         }
 
-        .codex__topic:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--clr-light);
-        }
-
         .codex__list-item {
             margin-bottom: 0.5rem;
+            text-align: center;
         }
 
         .codex__article {
             color: var(--clr-slate400);
             text-decoration: none;
             transition: color 0.3s ease;
+            
         }
 
         .codex__article:hover {
-            color: var(--clr-light);
+            color: var(--clr-rose);
         }
 
         button.codex-btn {

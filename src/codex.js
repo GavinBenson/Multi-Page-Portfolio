@@ -1,8 +1,8 @@
 ﻿const topicsContent = {
     "QA Fundamentals": [
         { title: "Understanding the Basics of QA: Principles, Processes, and Roles", link: "/articles/qa-fundamentals-1.html" },
-        { title: "Testing Approaches Demystified: Manual, Automated, and Beyond", link: "/articles/qa-fundamentals-2.html" },
-        { title: "The QA Mindset: Tools, Skills, and Strategies for Success", link: "/articles/qa-fundamentals-3.html" }
+        { title: "Testing Approaches: Manual, Automated, and Beyond (Coming Soon)", link: "#" },
+        { title: "Tools, Skills, and Strategies for Success (Coming Soon)", link: "#" }
     ],
     "Automation Testing": [
         { title: "Top automation frameworks: Selenium, Playwright", link: "/articles/automation-testing-1.html" },
@@ -32,8 +32,8 @@ function setupCodex() {
             <p class="codex__description">Choose a topic to explore:</p>
             <div class="codex__list">
                 <a href="#" class="codex__topic" data-topic="QA Fundamentals">QA Fundamentals</a>
-                <a href="#" class="codex__topic" data-  topic="Automation Testing">Automation Testing</a>
-                <a href="#" class="codex__topic" data-topic="Debugging and Bug Reporting">Debugging and Bug Reporting</a>
+                <a href="#" class="codex__topic" data- topic="Automation Testing">Automation Testing (Coming Soon)</a>
+                <a href="#" class="codex__topic" data- topic="Debugging and Bug Reporting">Debugging and Bug Reporting (Coming Soon)</a>
                 <!-- More topics can be added here -->
             </div>
         </div>
