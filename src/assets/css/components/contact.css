@@ -19,6 +19,15 @@
     max-width: 60ch;
 }
 
+.contact__actions {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
 .contact__btn {
     font-size: var(--size-sm);
 }
