@@ -1,4 +1,7 @@
-﻿const topicsContent = {
+// Vercel Web Analytics
+import { inject } from '@vercel/analytics';
+
+const topicsContent = {
     "QA Fundamentals": [
         { title: "Understanding the Basics of QA: Principles, Processes, and Roles", link: "/articles/qa-fundamentals-1.html" },
         { title: "Testing Approaches: Manual, Automated, and Beyond (Coming Soon)", link: "#" },
@@ -61,4 +64,8 @@ function setupCodex() {
 }
 import './assets/css/components/codex.css'
 import '/assets/css/components/header.css'
+
+// Inject Vercel Analytics
+inject();
+
 setupCodex();

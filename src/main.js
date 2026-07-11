@@ -1,5 +1,7 @@
 // ./src/main.js
 
+// Vercel Web Analytics
+import { inject } from '@vercel/analytics';
 
 import './assets/css/modern-normalize.css'
 import './assets/css/style.css'
@@ -20,6 +22,8 @@ import mobileNav from './assets/js/mobile-nav.js';
 import darkMode from './assets/js/dark-mode.js';
 import lazyLoading from './assets/js/lazy-loading.js';
 
+// Inject Vercel Analytics
+inject();
 
 // Initialize utilities
 window.addEventListener('DOMContentLoaded', () => {

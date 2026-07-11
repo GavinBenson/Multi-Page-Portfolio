@@ -11,5 +11,8 @@
   "devDependencies": {
     "glob": "^11.0.2",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
