@@ -5,6 +5,38 @@ import ProjectCard from './ProjectCard'
 
 const projects = [
   {
+    title: 'QA TestGen',
+    description:
+      'AI-powered test case generator. Paste a user story or feature description and get structured manual test cases with pre/post-conditions instantly.',
+    image: '/img/qa-testgen.png',
+    techStack: ['Next.js', 'TypeScript', 'Tailwind', 'Claude API'],
+    url: 'https://qa-testgen.vercel.app',
+  },
+  {
+    title: 'LeafScore',
+    description:
+      'Full-stack plant health scoring app with authentication, Stripe payments, and image uploads via Vercel Blob.',
+    image: '/img/leafscore.png',
+    techStack: ['Next.js', 'Drizzle', 'Neon', 'Stripe', 'NextAuth', 'Vitest'],
+    url: 'https://github.com/GavinBenson/leafscore',
+  },
+  {
+    title: 'Forge',
+    description:
+      'A 3D workout tracker with drag-and-drop workout builder, Three.js visualizations, and end-to-end Playwright tests.',
+    image: '/img/workout-app.png',
+    techStack: ['Next.js', 'Three.js', 'Drizzle', 'Playwright', 'Motion'],
+    url: 'https://workout-app-xi-jet.vercel.app',
+  },
+  {
+    title: 'Tally',
+    description:
+      'Local-first budgeting app with CSV import, spending insights, and interactive charts. All data stays in-browser via IndexedDB.',
+    image: '/img/budget-app.png',
+    techStack: ['Next.js', 'Dexie', 'Recharts', 'dnd-kit'],
+    url: 'https://budget-app-seven-orpin-90.vercel.app',
+  },
+  {
     title: 'Cryptobot',
     description:
       'A hybrid automation/data-analysis tool for scraping, visualizing, and analyzing cryptocurrency price data.',
@@ -19,18 +51,6 @@ const projects = [
     image: '/img/1.png',
     techStack: ['HTML', 'CSS', 'JavaScript'],
     url: 'https://www.evahoopes.com/',
-  },
-  {
-    title: 'Game Store',
-    description: 'An ecommerce game store similar to Steam.',
-    image: '/img/game1.png',
-    techStack: ['React', 'CSS'],
-  },
-  {
-    title: 'Echoes of An Abyss',
-    description: 'A text based JavaScript fantasy adventure game.',
-    image: '/img/ogre.png',
-    techStack: ['JavaScript', 'HTML', 'CSS'],
   },
 ]
 
