@@ -30,7 +30,7 @@ export default function MobileNav({
 
   return (
     <div
-      className={`fixed inset-0 z-[9998] flex flex-col items-center justify-center gap-8 transition-all duration-300 md:hidden ${
+      className={`fixed inset-0 z-[10000] flex flex-col items-center justify-center gap-8 transition-all duration-300 md:hidden ${
         isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}
       style={{ backgroundColor: 'var(--bg)' }}
