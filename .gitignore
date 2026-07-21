@@ -33,3 +33,6 @@ next-env.d.ts
 .vs/
 *.vs/
 *.vscode/
+
+# Playwright MCP artifacts
+.playwright-mcp/
