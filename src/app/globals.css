@@ -113,3 +113,9 @@ body::-webkit-scrollbar-thumb {
     scroll-behavior: auto;
   }
 }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
