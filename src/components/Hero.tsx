@@ -47,20 +47,15 @@ export default function Hero() {
 
         <motion.div variants={fadeUp} className="flex flex-col items-center gap-2">
           <h1
-            className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-tighter leading-none"
+            className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-tighter leading-none flex flex-col items-center gap-2"
             style={{ color: 'var(--text-secondary)' }}
           >
-            QA Engineer
-          </h1>
-          <hr
-            className="w-3/4 border-none h-0.5"
-            style={{ backgroundColor: 'var(--accent-secondary)' }}
-          />
-          <h1
-            className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-tighter leading-none"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Scrum Master
+            <span>QA Engineer</span>
+            <hr
+              className="w-3/4 border-none h-0.5"
+              style={{ backgroundColor: 'var(--accent-secondary)' }}
+            />
+            <span>Scrum Master</span>
           </h1>
         </motion.div>
 

@@ -10,7 +10,7 @@ const projects = [
       'A hybrid automation/data-analysis tool for scraping, visualizing, and analyzing cryptocurrency price data.',
     image: '/img/cryptobot5.PNG',
     techStack: ['Selenium', 'Pandas', 'Plotly', 'SQLite3', 'Python'],
-    url: 'https://github.com/GavinBenson/visual-test-validator',
+    url: 'https://github.com/GavinBenson/cryptobot',
   },
   {
     title: 'Eva Hoopes Real Estate',

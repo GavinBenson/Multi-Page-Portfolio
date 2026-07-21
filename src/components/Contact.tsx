@@ -41,6 +41,15 @@ export default function Contact() {
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             gavindbenson@gmail.com
           </p>
+          <a
+            href="/Benson_Gavin_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--accent)' }}
+            className="text-sm font-medium hover:underline"
+          >
+            Download Resume
+          </a>
         </div>
       </SectionReveal>
     </section>

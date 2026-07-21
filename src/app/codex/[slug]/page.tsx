@@ -64,7 +64,7 @@ export default async function ArticlePage({
       </div>
 
       <article
-        className="prose prose-invert max-w-none
+        className="prose max-w-none
           [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h1]:mb-8
           [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:mt-12 [&_h2]:mb-4
           [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-8 [&_h3]:mb-3
@@ -75,8 +75,16 @@ export default async function ArticlePage({
           [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:text-sm [&_pre]:overflow-x-auto [&_pre]:mb-6"
         style={{
           color: 'var(--text-secondary)',
+          ['--tw-prose-body' as string]: 'var(--text-secondary)',
           ['--tw-prose-headings' as string]: 'var(--text-primary)',
+          ['--tw-prose-bold' as string]: 'var(--text-primary)',
+          ['--tw-prose-links' as string]: 'var(--accent)',
           ['--tw-prose-code' as string]: 'var(--accent)',
+          ['--tw-prose-bullets' as string]: 'var(--text-secondary)',
+          ['--tw-prose-quotes' as string]: 'var(--text-secondary)',
+          ['--tw-prose-quote-borders' as string]: 'var(--accent)',
+          ['--tw-prose-counters' as string]: 'var(--text-secondary)',
+          ['--tw-prose-hr' as string]: 'var(--text-secondary)',
         }}
       >
         <MdxContent />

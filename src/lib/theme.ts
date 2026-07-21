@@ -15,7 +15,7 @@ export const palettes = {
       surface: '#f4f4f5',
       textPrimary: '#09090b',
       textSecondary: '#52525b',
-      accent: '#059669',
+      accent: '#047857',
       accentSecondary: '#4f46e5',
     },
   },
