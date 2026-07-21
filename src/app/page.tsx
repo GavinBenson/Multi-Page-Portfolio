@@ -1,6 +1,7 @@
 import Hero from '@/components/Hero'
 import About from '@/components/About'
 import FeaturedProject from '@/components/FeaturedProject'
+import ProjectsGrid from '@/components/ProjectsGrid'
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Hero />
       <About />
       <FeaturedProject />
+      <ProjectsGrid />
     </main>
   )
 }
