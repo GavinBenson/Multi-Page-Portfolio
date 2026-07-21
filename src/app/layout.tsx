@@ -23,6 +23,16 @@ export default function RootLayout({
           enableSystem={false}
           themes={['dark', 'light']}
         >
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10001] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-semibold focus:no-underline"
+            style={{
+              backgroundColor: 'var(--accent)',
+              color: 'var(--bg)',
+            }}
+          >
+            Skip to content
+          </a>
           <ScrollProgress />
           <Header />
           {children}
