@@ -3,13 +3,7 @@
 import { useState, useEffect } from 'react'
 import ThemeToggle from './ThemeToggle'
 import MobileNav from './MobileNav'
-
-const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Work', href: '#featured' },
-  { label: 'Codex', href: '/codex' },
-  { label: 'Contact', href: '#contact' },
-]
+import { navLinks } from '@/lib/navigation'
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)

@@ -2,13 +2,7 @@
 
 import { useEffect } from 'react'
 import ThemeToggle from './ThemeToggle'
-
-const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Work', href: '#featured' },
-  { label: 'Codex', href: '/codex' },
-  { label: 'Contact', href: '#contact' },
-]
+import { navLinks } from '@/lib/navigation'
 
 export default function MobileNav({
   isOpen,

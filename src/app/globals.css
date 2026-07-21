@@ -20,9 +20,9 @@
   --surface: #f4f4f5;
   --text-primary: #09090b;
   --text-secondary: #52525b;
-  --accent: #059669;
+  --accent: #047857;
   --accent-secondary: #4f46e5;
-  --accent-glow: rgba(5, 150, 105, 0.1);
+  --accent-glow: rgba(4, 120, 87, 0.1);
 }
 
 /* ━━━ PALETTE B: Precision (uncomment both blocks, comment A above) ━━━ */
