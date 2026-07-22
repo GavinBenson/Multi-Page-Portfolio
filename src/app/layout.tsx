@@ -20,8 +20,9 @@ export default function RootLayout({
       <body className={fontSans.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem={true}
+          defaultTheme="auto"
+          enableSystem={false}
+          themes={['light', 'dark', 'auto']}
         >
           <a
             href="#main-content"
