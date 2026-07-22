@@ -1,0 +1,151 @@
+export const meta = {
+  title: 'Building a Playwright Automation Framework from Scratch',
+  description: 'A practical guide to structuring a Playwright test automation framework with the Page Object Model, fixtures, and CI integration.',
+  category: 'Automation',
+  readTime: '12 min',
+  date: '2025-06-15',
+}
+
+# {meta.title}
+
+Most teams start automation the wrong way: one engineer writes a few scripts, they work on their machine, and six months later nobody can maintain them. I've built automation frameworks at two companies now, and the difference between a pile of scripts and a real framework comes down to three decisions you make on day one.
+
+## Why Playwright
+
+I've worked with Selenium, Cypress, and Playwright across different teams. Playwright won me over for a few reasons:
+
+- **Multi-browser by default.** One test runs against Chromium, Firefox, and WebKit without extra config.
+- **Auto-waiting.** No more `sleep(2000)` or explicit wait chains. Playwright waits for elements to be actionable before interacting.
+- **Network interception.** Mock API responses, block third-party scripts, or assert on request payloads — all built in.
+- **Trace viewer.** When a test fails in CI, the trace gives you a frame-by-frame replay with DOM snapshots. This alone saves hours of debugging.
+
+## The Page Object Model
+
+The Page Object Model (POM) is the single most important pattern in test automation. Every page or component gets a class that encapsulates its selectors and interactions.
+
+```typescript
+// pages/login.page.ts
+export class LoginPage {
+  constructor(private page: Page) {}
+
+  private usernameInput = this.page.getByLabel('Username');
+  private passwordInput = this.page.getByLabel('Password');
+  private submitButton = this.page.getByRole('button', { name: 'Sign in' });
+  private errorMessage = this.page.getByRole('alert');
+
+  async login(username: string, password: string) {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
+  }
+
+  async expectError(message: string) {
+    await expect(this.errorMessage).toContainText(message);
+  }
+}
+```
+
+Why this matters: when the dev team changes the login form, you update one file. Not thirty tests.
+
+## Fixtures Over Setup Functions
+
+Playwright fixtures are dependency injection for tests. Instead of calling setup functions in every test, you declare what you need and the framework provides it.
+
+```typescript
+// fixtures.ts
+type MyFixtures = {
+  loginPage: LoginPage;
+  authenticatedPage: Page;
+};
+
+export const test = base.extend<MyFixtures>({
+  loginPage: async ({ page }, use) => {
+    await page.goto('/login');
+    await use(new LoginPage(page));
+  },
+  authenticatedPage: async ({ page }, use) => {
+    await page.goto('/login');
+    const loginPage = new LoginPage(page);
+    await loginPage.login('testuser', 'password123');
+    await page.waitForURL('/dashboard');
+    await use(page);
+  },
+});
+```
+
+Now tests read like specifications:
+
+```typescript
+test('locked account shows lockout message', async ({ loginPage }) => {
+  await loginPage.login('locked-user', 'password');
+  await loginPage.expectError('Account locked after multiple failed attempts');
+});
+```
+
+## Folder Structure That Scales
+
+```
+tests/
+  fixtures/
+    auth.fixture.ts
+    navigation.fixture.ts
+  pages/
+    login.page.ts
+    dashboard.page.ts
+    settings.page.ts
+  specs/
+    auth/
+      login.spec.ts
+      logout.spec.ts
+      password-reset.spec.ts
+    dashboard/
+      widgets.spec.ts
+      filters.spec.ts
+  helpers/
+    api-client.ts
+    test-data.ts
+playwright.config.ts
+```
+
+Group specs by feature, not by type. When someone asks "do we have tests for password reset?" the answer should be a folder, not a grep.
+
+## Test Data Strategy
+
+Hard-coded test data is a maintenance nightmare. I use a layered approach:
+
+1. **API seeding.** Before each test suite, hit the API to create the exact data state you need. This is faster than UI setup and less fragile.
+2. **Factory functions.** Generate unique data per test run to avoid collisions in shared environments.
+3. **Cleanup hooks.** Tests should clean up after themselves. If a test creates a user, it deletes that user in the teardown.
+
+```typescript
+function generateUser(overrides = {}) {
+  return {
+    username: `test-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    email: `test-${Date.now()}@example.com`,
+    password: 'Test123!@#',
+    ...overrides,
+  };
+}
+```
+
+## CI Integration
+
+Tests that only run locally aren't tests — they're demos. Every automation framework needs CI from day one.
+
+Key CI decisions:
+
+- **Parallelization.** Playwright's built-in sharding splits tests across workers. In our pipeline, we shard across 4 containers and cut the suite time from 45 minutes to 12.
+- **Retry strategy.** Flaky tests are inevitable in E2E. We allow 1 retry in CI but flag any test that retries more than twice in a week for investigation.
+- **Artifact collection.** Failed tests upload traces, screenshots, and video. The trace viewer is the single best debugging tool I've used — you can step through every action, see the DOM at each point, and inspect network requests.
+- **Gating.** Tests must pass before merge. No exceptions. The moment you allow "we'll fix it later," the suite degrades.
+
+## Lessons Learned
+
+After building frameworks for two teams and maintaining suites of 700+ test cases:
+
+- **Prefer user-facing selectors.** `getByRole`, `getByLabel`, `getByText` over CSS selectors. They survive refactors and catch accessibility regressions for free.
+- **One assertion per behavior.** A test that checks login, navigation, AND form submission is three tests pretending to be one. When it fails, you don't know which behavior broke.
+- **Tag your tests.** Use `@smoke`, `@regression`, `@critical` tags so you can run subsets. The smoke suite should finish in under 5 minutes.
+- **Monitor flake rate.** Track which tests retry most often. A 2% flake rate across 500 tests means 10 false alarms per run. That erodes team trust faster than anything.
+
+The best automation framework is the one your team actually uses. Keep it simple, keep it fast, keep it trustworthy.

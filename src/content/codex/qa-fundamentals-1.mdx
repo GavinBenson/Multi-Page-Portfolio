@@ -1,6 +1,6 @@
 export const meta = {
-  title: 'QA Fundamentals: Part 1 — Principles, Processes, and Roles',
-  description: 'An introduction to software quality assurance: what QA is, its guiding principles, and where it fits in the SDLC.',
+  title: 'QA Fundamentals: Testing Types and When to Use Them',
+  description: 'A practical breakdown of testing types — unit, integration, E2E, and exploratory — and how to choose the right mix for your project.',
   category: 'QA',
   readTime: '8 min',
   date: '2024-12-28',
@@ -8,72 +8,115 @@ export const meta = {
 
 # {meta.title}
 
-Quality Assurance (QA) is the cornerstone of delivering reliable and user-friendly software. This article explores the fundamental principles of QA, the processes it entails, and the roles QA professionals play in the software development life cycle (SDLC).
+Every testing conversation eventually lands on the same question: "what should we be testing, and how?" The answer depends on what you're building, but the framework for thinking about it is universal. Here's how I break down testing types and decide where to invest.
 
-## Quality? Assurance? What's the difference?
+## The Testing Pyramid
 
-**Quality** refers to how well a product meets customer needs and expectations in terms of functionality, design, reliability, durability, and cost. In software development, this means delivering a product that works as intended, providing value to the user.
+The pyramid is simple: lots of unit tests at the base, fewer integration tests in the middle, and a thin layer of E2E tests at the top. It's been around for over a decade, and it's still the most useful mental model for test strategy.
 
-**Assurance** is the guarantee that the product will perform as expected without issues, adhering to defined requirements and standards.
+The reasoning is straightforward:
 
-## What is Quality Assurance?
+- **Unit tests** are fast (milliseconds), cheap to write, and easy to debug when they fail. They test a single function or class in isolation.
+- **Integration tests** are slower but verify that components work together — your API talks to the database correctly, your service calls the right external endpoint.
+- **E2E tests** are the slowest and most brittle, but they test what users actually experience — clicking through a checkout flow in a real browser.
 
-QA is the practice of ensuring that software products meet predefined quality standards and fulfill user expectations. It encompasses systematic activities designed to monitor and improve the development process, preventing defects before they occur.
+The mistake I see most often is an inverted pyramid: teams with 500 Selenium tests and 20 unit tests. Every test run takes an hour, half the failures are flaky, and nobody trusts the suite. Start from the bottom.
 
-Key objectives of QA include:
+## Unit Tests
 
-- **Defining Standards:** Establishing benchmarks for functionality, usability, and performance.
-- **Preventing Defects:** Identifying potential issues early in the development cycle.
-- **Enhancing User Confidence:** Delivering reliable software that meets end-user needs.
+Unit tests verify that individual functions produce correct output for given input. They should be:
 
-## The Principles of QA
+- **Fast.** A unit test that takes more than 50ms is probably an integration test in disguise.
+- **Isolated.** No database, no network, no file system. If it needs external state, mock it.
+- **Deterministic.** Same input, same output, every time. No random data, no system clock.
 
-QA is guided by several core principles that ensure effective outcomes:
+```typescript
+function calculateDiscount(price: number, tier: 'gold' | 'silver' | 'none'): number {
+  if (tier === 'gold') return price * 0.8;
+  if (tier === 'silver') return price * 0.9;
+  return price;
+}
 
-1. **Customer-Centric Approach:**
-   - Prioritizing user requirements and expectations.
-   - Ensuring the final product aligns with real-world needs.
-2. **Proactive Prevention:**
-   - Emphasizing early detection and resolution of potential issues.
-   - Integrating quality practices at each development stage.
-3. **Process-Oriented Mindset:**
-   - Focusing on the methodology and tools used to create the software.
-   - Continuously improving processes to enhance efficiency and output.
-4. **Collaboration and Communication:**
-   - Promoting teamwork across QA, development, and other stakeholders.
-   - Ensuring transparency and shared responsibility for quality.
+test('gold tier gets 20% discount', () => {
+  expect(calculateDiscount(100, 'gold')).toBe(80);
+});
 
-## QA in the Software Development Life Cycle (SDLC)
+test('no tier pays full price', () => {
+  expect(calculateDiscount(100, 'none')).toBe(100);
+});
+```
 
-As QA professionals, our role spans every phase of this process to ensure the final product meets high-quality standards.
+Where unit tests shine: pure business logic, data transformations, validation rules, utility functions. Where they don't: anything that depends on how components interact.
 
-1. **Requirement Analysis:**
-   - Verifies that requirements are clear, consistent, and testable.
-   - Collaborates with stakeholders to identify potential risks.
-2. **Design Phase:**
-   - Reviews design documents for alignment with requirements.
-   - Identifies areas that require specific testing strategies.
-3. **Development Phase:**
-   - Works alongside developers to ensure coding standards are followed.
-   - Implements unit and integration testing to catch early defects.
-4. **Testing Phase:**
-   - Conducts functional, non-functional, and regression testing.
-   - Ensures thorough coverage of all requirements.
-5. **Deployment and Maintenance:**
-   - Validates the readiness of the software for production.
-   - Monitors performance and addresses post-release issues.
+## Integration Tests
 
-## The Role of QA Professionals
+Integration tests verify that modules work together correctly. The boundary you're testing is the seam between your code and something external — a database, an API, a message queue.
 
-QA professionals are key players in the development process, bridging the gap between technical implementation and user satisfaction. Their responsibilities include:
+```typescript
+test('creating a user persists to database', async () => {
+  const user = await userService.create({
+    email: 'test@example.com',
+    name: 'Test User',
+  });
 
-- **Creating Test Plans:** Developing comprehensive strategies to validate requirements.
-- **Executing Tests:** Performing manual or automated testing to identify defects.
-- **Documenting Issues:** Logging bugs, tracking resolutions, and providing detailed reports.
-- **Advocating for Quality:** Collaborating with developers to resolve issues and improve processes.
+  const found = await db.users.findByEmail('test@example.com');
+  expect(found).not.toBeNull();
+  expect(found.name).toBe('Test User');
+});
+```
 
-Beyond technical tasks, QA professionals act as champions of quality, ensuring that user needs remain a priority throughout development.
+Key difference from unit tests: integration tests use real dependencies. The database is a real database (often a test container). The API call hits a real endpoint (or a controlled test server). This makes them slower but catches bugs that mocks hide — like a SQL query that works in SQLite but fails in PostgreSQL.
 
-## Conclusion
+## End-to-End Tests
 
-QA is not just about finding bugs; it's about building confidence in the software and ensuring that it meets both user expectations and business requirements. Whether you're a beginner or an experienced QA professional, understanding these fundamentals is key to success.
+E2E tests simulate real user behavior in a real browser. They're the closest thing to "does this actually work for a user?"
+
+```typescript
+test('user can complete checkout', async ({ page }) => {
+  await page.goto('/products');
+  await page.getByRole('button', { name: 'Add to Cart' }).first().click();
+  await page.getByRole('link', { name: 'Cart' }).click();
+  await page.getByRole('button', { name: 'Checkout' }).click();
+
+  await page.getByLabel('Card number').fill('4242424242424242');
+  await page.getByRole('button', { name: 'Pay' }).click();
+
+  await expect(page.getByText('Order confirmed')).toBeVisible();
+});
+```
+
+E2E tests are expensive. Each one takes seconds to minutes, requires browser infrastructure, and breaks when the UI changes. Use them sparingly:
+
+- **Critical user paths.** Login, checkout, signup — the flows that make money or lose users.
+- **Smoke tests.** A handful of tests that verify the app loads and navigates correctly after deployment.
+- **Regression protection.** Tests for bugs that escaped to production and must never recur.
+
+## Exploratory Testing
+
+Exploratory testing is the one type that can't be automated, and it's the one most teams underinvest in. It's a QA engineer using the software with intent — not following a script, but actively trying to break it.
+
+Effective exploratory testing is structured, not random:
+
+- **Charter-based.** "Explore the payment flow using expired credit cards and verify error handling." Specific enough to focus, broad enough to discover.
+- **Time-boxed.** 30-60 minute sessions with a clear scope. Prevents rabbit holes.
+- **Documented.** Not a formal test plan, but notes on what was tried, what broke, and what felt wrong.
+
+Exploratory testing catches the bugs that automated tests miss: confusing UX flows, edge cases nobody thought to script, performance issues that only appear with realistic usage patterns. Every team needs someone doing this regularly.
+
+## Choosing the Right Mix
+
+There's no universal ratio. The right mix depends on your application:
+
+**Data-heavy backends** (APIs, ETL pipelines): Heavy on unit and integration tests. Minimal E2E — maybe just contract tests against the API surface.
+
+**User-facing web apps**: Balanced pyramid. Strong unit tests for business logic, integration tests for API calls, and targeted E2E tests for critical flows.
+
+**Mobile apps**: Similar to web, but E2E tests are more expensive (device farms, slow emulators). Invest more in integration tests and use E2E only for the most critical paths.
+
+**Legacy systems**: Start with E2E tests to create a safety net, then add unit tests as you refactor. You can't unit-test code that wasn't designed for it without changing it first.
+
+## What I've Learned
+
+The teams I've worked with that ship fastest with the fewest regressions share one trait: they test at the right level. They don't write E2E tests for logic that a unit test can cover. They don't mock their database when the integration is what needs testing. And they invest in exploratory testing because they know automated tests only find the bugs you anticipated.
+
+The pyramid isn't a rule — it's a heuristic. But it's a good one.
