@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
 export default function ThemeToggle({ className = '' }: { className?: string }) {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
@@ -13,14 +13,16 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
     return <div className={`w-5 h-5 ${className}`} />
   }
 
+  const isDark = resolvedTheme === 'dark'
+
   return (
     <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={`w-5 h-5 cursor-pointer transition-colors duration-200 ${className}`}
       style={{ color: 'var(--text-secondary)' }}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
-      {theme === 'dark' ? (
+      {isDark ? (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="5" />
           <line x1="12" y1="1" x2="12" y2="3" />
