@@ -45,7 +45,7 @@ export default function Header() {
                 className="h-4 border-l"
                 style={{ borderColor: 'var(--text-secondary)', opacity: 0.3 }}
               />
-              <li>
+              <li className="flex items-center">
                 <ThemeToggle />
               </li>
             </ul>
