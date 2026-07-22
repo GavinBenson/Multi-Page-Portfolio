@@ -1,0 +1,107 @@
+export const meta = {
+  title: 'Shift-Left Testing in Practice',
+  description: 'What shift-left actually looks like on a real team — moving beyond the buzzword to concrete practices that catch bugs earlier.',
+  category: 'Process',
+  readTime: '9 min',
+  date: '2025-10-05',
+}
+
+# {meta.title}
+
+"Shift left" is one of those terms that gets thrown around in every QA job posting and sprint retrospective. The concept is simple: find bugs earlier in the development cycle where they're cheaper to fix. The execution is where most teams struggle.
+
+After implementing shift-left practices across two teams, here's what actually worked — and what turned out to be theater.
+
+## The Cost Curve Is Real
+
+The data behind shift-left isn't controversial. A bug caught in requirements costs roughly 1x to fix. The same bug caught in development costs 6x. In testing, 15x. In production, 100x. These numbers vary by study, but the shape of the curve is consistent.
+
+The practical implication: every hour spent on prevention saves days of debugging later. But "prevention" needs to be specific. "Be more careful" isn't a strategy.
+
+## What Actually Works
+
+### 1. QA in Requirements Review
+
+The highest-leverage shift-left practice is putting a QA engineer in the room during requirements discussions. Not to test anything — to ask questions.
+
+Questions I ask in every requirements review:
+
+- "What happens when this field is empty?"
+- "What's the expected behavior for users without this permission?"
+- "How should this interact with [existing feature]?"
+- "What does 'error state' look like here?"
+
+These questions sound obvious. They aren't. I've prevented entire categories of bugs by asking "what happens when the user hits the back button during this flow?" before a single line of code was written.
+
+The key is asking these questions early enough that the answer is a conversation, not a code change.
+
+### 2. Testability as a Design Constraint
+
+When I'm included in technical design discussions, I push for testability as a first-class concern:
+
+- **Deterministic IDs.** If the system generates random UUIDs for everything, tests become fragile. Seedable ID generation or test-specific ID patterns make automation reliable.
+- **Observable state.** If I can't verify a background job completed without checking the database directly, the system needs a status endpoint.
+- **Isolated environments.** If tests require a shared staging server, they'll be flaky. Containerized test environments eliminate an entire class of failures.
+- **Feature flags.** Rolling out behind a flag means I can test the feature in production-like conditions before it reaches users.
+
+### 3. Writing Acceptance Criteria as Test Cases
+
+The gap between "user can log in" and a testable specification is enormous. I work with product managers to write acceptance criteria in Given/When/Then format:
+
+**Before:**
+> Users should be able to reset their password.
+
+**After:**
+> - Given a registered user on the login page, when they click "Forgot Password" and enter their email, then they receive a reset link within 2 minutes.
+> - Given a reset link, when the user clicks it within 24 hours, then they can set a new password.
+> - Given a reset link, when the user clicks it after 24 hours, then they see an expiration message with a link to request a new reset.
+> - Given a user who has requested 3 resets in one hour, when they request a fourth, then the request is rate-limited with a clear message.
+
+The second version is testable. It's also a better product spec — the product manager now has to decide on the rate limit before development starts, not when a QA engineer files a bug about it.
+
+### 4. Pre-Commit Test Hooks
+
+Developers run tests before pushing. This sounds basic, but getting the feedback loop right makes or breaks adoption:
+
+- **Speed matters.** If the pre-commit suite takes more than 3 minutes, developers will bypass it. Keep it to unit tests and linting.
+- **Targeted runs.** Only run tests affected by changed files. Playwright supports this with `--grep` tags by feature area.
+- **No false positives.** A flaky test in the pre-commit hook trains developers to ignore all test failures. Ruthlessly remove flaky tests from the fast suite.
+
+### 5. Static Analysis as QA
+
+Type systems, linters, and static analyzers catch bugs before tests even run. As a QA engineer, I advocate for:
+
+- **Strict TypeScript.** `strict: true` catches null reference errors, type mismatches, and missing error handling at compile time.
+- **ESLint rules for common bugs.** `no-floating-promises` catches unhandled async errors. `exhaustive-deps` catches stale closure bugs in React.
+- **Database migration linting.** Catching destructive migrations (dropping columns, changing types) before they hit staging.
+
+These aren't testing in the traditional sense, but they're quality assurance — they assure quality before the code ever runs.
+
+## What Doesn't Work
+
+### Over-Documentation
+
+Writing a 40-page test plan before development starts is shift-left theater. By the time the code is written, half the plan is irrelevant because requirements changed. Lightweight, living documents beat comprehensive dead ones.
+
+### Gatekeeping
+
+Shift-left doesn't mean QA blocks development. It means QA collaborates earlier. If QA becomes a bottleneck at the requirements stage the same way it was a bottleneck at the testing stage, you've just moved the problem.
+
+### Testing Everything Early
+
+Not every test should shift left. Exploratory testing is inherently late-cycle — you need a working system to explore. Performance testing needs realistic data volumes that don't exist in early development. The goal is to shift the right things left, not everything.
+
+## Measuring Success
+
+How do you know shift-left is working? Track these metrics:
+
+- **Defect escape rate.** What percentage of bugs are found in production vs. pre-production? This should trend down.
+- **Requirements defects.** Bugs traced back to unclear or missing requirements. This should trend down as QA participates earlier.
+- **Cycle time.** Time from "code complete" to "deployed." If shift-left is working, this shrinks because fewer bugs are found late.
+- **Rework rate.** How often does a feature bounce back from QA to development? Early collaboration reduces this.
+
+## The Cultural Shift
+
+The hardest part of shift-left isn't the practices — it's the mindset change. Developers need to see QA as a partner, not a gatekeeper. Product managers need to include QA in planning, not just execution. And QA engineers need to be comfortable speaking up in rooms where they're the only non-developer.
+
+In my experience, the teams that do this well share one trait: they treat quality as everyone's responsibility, with QA engineers as the specialists who make everyone better at it.

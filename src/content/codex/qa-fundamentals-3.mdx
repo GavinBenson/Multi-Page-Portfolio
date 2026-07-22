@@ -1,79 +1,153 @@
 export const meta = {
-  title: 'QA Fundamentals: Part 3 — Principles, Processes, and Roles',
-  description: 'Wrapping up the QA fundamentals series: recapping principles, SDLC involvement, and the QA professional role.',
+  title: 'QA Fundamentals: Bug Reports That Get Fixed',
+  description: 'How to write bug reports that developers actually read and fix — with templates, examples, and the common mistakes that get your bugs deprioritized.',
   category: 'QA',
-  readTime: '8 min',
+  readTime: '7 min',
   date: '2025-01-25',
 }
 
 # {meta.title}
 
-Quality Assurance (QA) is the cornerstone of delivering reliable and user-friendly software. This article explores the fundamental principles of QA, the processes it entails, and the roles QA professionals play in the software development life cycle (SDLC).
+A bug that's reported poorly is a bug that stays open for months. I've seen critical issues sit in backlogs for entire quarters because the report was a one-liner like "checkout is broken." The developer couldn't reproduce it, so they marked it "needs info" and moved on.
 
-## Quality? Assurance? What's the difference?
+Writing effective bug reports is one of the highest-leverage skills a QA engineer can develop. A good report gets fixed in hours. A bad report gets triaged into oblivion.
 
-**Quality** refers to how well a product meets customer needs and expectations in terms of functionality, design, reliability, durability, and cost. In software development, this means delivering a product that works as intended, providing value to the user.
+## The Anatomy of a Good Bug Report
 
-**Assurance** is the guarantee that the product will perform as expected without issues, adhering to defined requirements and standards.
+Every bug report needs five things. Miss any one of them and you're adding friction to the fix:
 
-## What is Quality Assurance?
+### 1. A Specific Title
 
-QA is the practice of ensuring that software products meet predefined quality standards and fulfill user expectations. It encompasses systematic activities designed to monitor and improve the development process, preventing defects before they occur.
+The title should tell a developer whether this bug is relevant to them without opening the ticket.
 
-Key objectives of QA include:
+**Bad:** "Login doesn't work"
+**Good:** "Login fails with 500 error when password contains special characters"
 
-- **Defining Standards:** Establishing benchmarks for functionality, usability, and performance.
-- **Preventing Defects:** Identifying potential issues early in the development cycle.
-- **Enhancing User Confidence:** Delivering reliable software that meets end-user needs.
+**Bad:** "Page is slow"
+**Good:** "Dashboard takes 12s to load when user has 500+ projects"
 
-## The Principles of QA
+The title is a search string. Six months from now, when someone hits the same bug, they'll search for it. "Login doesn't work" matches everything. "500 error password special characters" matches exactly this issue.
 
-QA is guided by several core principles that ensure effective outcomes:
+### 2. Steps to Reproduce
 
-1. **Customer-Centric Approach:**
-   - Prioritizing user requirements and expectations.
-   - Ensuring the final product aligns with real-world needs.
-2. **Proactive Prevention:**
-   - Emphasizing early detection and resolution of potential issues.
-   - Integrating quality practices at each development stage.
-3. **Process-Oriented Mindset:**
-   - Focusing on the methodology and tools used to create the software.
-   - Continuously improving processes to enhance efficiency and output.
-4. **Collaboration and Communication:**
-   - Promoting teamwork across QA, development, and other stakeholders.
-   - Ensuring transparency and shared responsibility for quality.
+This is where most bug reports fail. The developer needs to see the bug themselves before they can fix it. Give them an exact recipe:
 
-## QA in the Software Development Life Cycle (SDLC)
+```
+Steps to Reproduce:
+1. Go to /login
+2. Enter email: testuser@example.com
+3. Enter password: P@ss&word!123
+4. Click "Sign In"
 
-As QA professionals, our role spans every phase of this process to ensure the final product meets high-quality standards.
+Expected: User is logged in and redirected to /dashboard
+Actual: 500 Internal Server Error is displayed. Network tab shows
+        POST /api/auth/login returns 500 with body:
+        {"error": "XML parsing error: unexpected character"}
+```
 
-1. **Requirement Analysis:**
-   - Verifies that requirements are clear, consistent, and testable.
-   - Collaborates with stakeholders to identify potential risks.
-2. **Design Phase:**
-   - Reviews design documents for alignment with requirements.
-   - Identifies areas that require specific testing strategies.
-3. **Development Phase:**
-   - Works alongside developers to ensure coding standards are followed.
-   - Implements unit and integration testing to catch early defects.
-4. **Testing Phase:**
-   - Conducts functional, non-functional, and regression testing.
-   - Ensures thorough coverage of all requirements.
-5. **Deployment and Maintenance:**
-   - Validates the readiness of the software for production.
-   - Monitors performance and addresses post-release issues.
+Notice what's specific: the exact URL, the exact input that triggers the bug, what the API actually returned. A developer can reproduce this in 30 seconds.
 
-## The Role of QA Professionals
+### 3. Expected vs. Actual Behavior
 
-QA professionals are key players in the development process, bridging the gap between technical implementation and user satisfaction. Their responsibilities include:
+Always state both. "It's broken" doesn't tell the developer what should happen. Maybe the developer thinks the current behavior is correct and you're misunderstanding the spec. Stating your expectation surfaces that disagreement early.
 
-- **Creating Test Plans:** Developing comprehensive strategies to validate requirements.
-- **Executing Tests:** Performing manual or automated testing to identify defects.
-- **Documenting Issues:** Logging bugs, tracking resolutions, and providing detailed reports.
-- **Advocating for Quality:** Collaborating with developers to resolve issues and improve processes.
+### 4. Environment Details
 
-Beyond technical tasks, QA professionals act as champions of quality, ensuring that user needs remain a priority throughout development.
+- Browser and version (Chrome 125, Firefox 128)
+- Operating system (macOS 14.5, Windows 11)
+- Screen resolution (matters for responsive bugs)
+- User role/permissions (admin vs. regular user)
+- Feature flags enabled (if applicable)
 
-## Conclusion
+I've seen bugs that only reproduce on Firefox, only on Windows, only for users with a specific permission set. Without environment info, the developer tries it in their default setup, can't reproduce, and closes the ticket.
 
-QA is not just about finding bugs; it's about building confidence in the software and ensuring that it meets both user expectations and business requirements. Whether you're a beginner or an experienced QA professional, understanding these fundamentals is key to success.
+### 5. Evidence
+
+Attach everything that helps:
+
+- **Screenshots** for visual bugs (with annotations showing exactly what's wrong)
+- **Screen recordings** for interaction bugs (hover states, animations, timing issues)
+- **Console logs** for JavaScript errors
+- **Network tab exports** for API issues (HAR files)
+- **Stack traces** from server logs if you have access
+
+A screenshot with a red circle around the broken element saves five minutes of "what exactly do you mean by 'misaligned'?"
+
+## Severity vs. Priority
+
+These are different and getting them right determines how fast your bug gets fixed:
+
+**Severity** is how bad the impact is:
+- **Critical:** System crash, data loss, security vulnerability
+- **Major:** Feature broken with no workaround
+- **Minor:** Feature broken with workaround available
+- **Cosmetic:** Visual issue, typo, alignment
+
+**Priority** is how urgently it needs fixing:
+- **P0:** Fix immediately (production down)
+- **P1:** Fix this sprint
+- **P2:** Fix next sprint
+- **P3:** Backlog
+
+A typo on the homepage is low severity but might be high priority (it's the first thing users see). A crash in an admin-only debug panel is high severity but low priority (three people use it). Understanding this distinction helps you communicate effectively with product managers.
+
+## Common Mistakes
+
+### The Novel
+
+A 2000-word bug report that includes the entire history of how you found the bug, what you were trying to test, and your theories about the root cause. Developers skim. Put the reproduction steps first, theories last.
+
+### The One-Liner
+
+"Search is broken." Which search? What did you search for? What happened? What should have happened? What browser? This ticket will sit in "needs info" forever.
+
+### Duplicate Without Checking
+
+Before filing, search for existing reports. Duplicate bugs waste everyone's time and split the conversation across multiple tickets. If you find a duplicate, add your reproduction scenario as a comment — different repro steps often reveal the root cause faster.
+
+### Burying the Lead
+
+If you found a security vulnerability or data loss bug, say so immediately. Don't bury "user passwords are visible in the API response" after three paragraphs of context. Lead with severity.
+
+### Opinion as Bug
+
+"The button should be blue instead of green" is not a bug — it's a design opinion. File it as a suggestion or bring it up in a design review. Bug trackers should be for things that are objectively wrong: crashes, incorrect data, spec violations, broken functionality.
+
+## The Template I Use
+
+```markdown
+## Summary
+[One sentence describing the bug]
+
+## Steps to Reproduce
+1. [First step]
+2. [Second step]
+3. [...]
+
+## Expected Behavior
+[What should happen]
+
+## Actual Behavior
+[What actually happens]
+
+## Environment
+- Browser: [e.g., Chrome 125]
+- OS: [e.g., macOS 14.5]
+- User role: [e.g., admin, regular user]
+- URL: [exact page URL]
+
+## Severity / Priority
+[e.g., Major / P1]
+
+## Evidence
+[Screenshots, recordings, logs]
+
+## Notes
+[Any additional context, workarounds, or theories about root cause]
+```
+
+## What I've Learned
+
+The best QA engineers I've worked with write bug reports that developers thank them for. Not because they're polite — because the reports are so clear that the developer can go from "reading the ticket" to "pushing the fix" in under an hour.
+
+Every minute spent writing a clear bug report saves ten minutes of back-and-forth in ticket comments. It's the most undervalued skill in QA.

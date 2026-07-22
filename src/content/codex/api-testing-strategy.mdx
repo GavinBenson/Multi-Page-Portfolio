@@ -1,0 +1,169 @@
+export const meta = {
+  title: 'API Testing Beyond Status Codes',
+  description: 'Why checking for 200 OK is just the start. A practical approach to API testing that catches the bugs your UI tests miss.',
+  category: 'Testing',
+  readTime: '10 min',
+  date: '2025-08-20',
+}
+
+# {meta.title}
+
+Every API testing tutorial starts the same way: send a GET request, check for 200, done. In practice, this catches maybe 10% of the bugs that actually ship to production. The interesting defects live in the gaps between happy paths — malformed payloads, race conditions, authorization edge cases, and contract drift.
+
+## The Testing Pyramid Applied to APIs
+
+API tests sit in the middle of the testing pyramid, and they're the highest-leverage tests you can write. They're faster than E2E tests (no browser, no UI rendering), more realistic than unit tests (they exercise real middleware, validation, and database queries), and they catch integration bugs that unit tests can't.
+
+My typical coverage split for a REST API:
+
+- **Contract tests (40%):** Does the API return the shape the frontend expects?
+- **Business logic tests (30%):** Do the domain rules hold under edge cases?
+- **Security tests (20%):** Authentication, authorization, input validation.
+- **Performance baselines (10%):** Response times under normal load.
+
+## Contract Testing
+
+The most common API bug I see is contract drift — the backend changes a field name or nests a response differently, and the frontend breaks. Neither team's tests catch it because they're testing their own code in isolation.
+
+Contract tests verify the API's response shape against a schema:
+
+```typescript
+test('GET /api/users/:id returns expected shape', async ({ request }) => {
+  const response = await request.get('/api/users/1');
+  const body = await response.json();
+
+  expect(body).toMatchObject({
+    id: expect.any(Number),
+    username: expect.any(String),
+    email: expect.any(String),
+    createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}/),
+    role: expect.stringMatching(/^(admin|user|viewer)$/),
+  });
+
+  // Fields that should NOT be in the response
+  expect(body).not.toHaveProperty('passwordHash');
+  expect(body).not.toHaveProperty('internalFlags');
+});
+```
+
+The negative assertions matter as much as the positive ones. I've caught PII leaks and internal debug fields in production responses this way.
+
+## Boundary Testing
+
+Every input field has boundaries that developers define in validation logic. Those boundaries are where bugs cluster:
+
+```typescript
+describe('POST /api/projects', () => {
+  test('rejects title over 200 characters', async ({ request }) => {
+    const response = await request.post('/api/projects', {
+      data: { title: 'a'.repeat(201), description: 'Valid' },
+    });
+    expect(response.status()).toBe(422);
+  });
+
+  test('accepts title at exactly 200 characters', async ({ request }) => {
+    const response = await request.post('/api/projects', {
+      data: { title: 'a'.repeat(200), description: 'Valid' },
+    });
+    expect(response.status()).toBe(201);
+  });
+
+  test('rejects empty title', async ({ request }) => {
+    const response = await request.post('/api/projects', {
+      data: { title: '', description: 'Valid' },
+    });
+    expect(response.status()).toBe(422);
+  });
+
+  test('handles unicode in title', async ({ request }) => {
+    const response = await request.post('/api/projects', {
+      data: { title: '测试项目 🚀 Ñoño', description: 'Valid' },
+    });
+    expect(response.status()).toBe(201);
+    const body = await response.json();
+    expect(body.title).toBe('测试项目 🚀 Ñoño');
+  });
+});
+```
+
+The unicode test catches a surprising number of bugs — truncation at byte boundaries, encoding mismatches between the API and database, and rendering issues downstream.
+
+## Authorization Matrix Testing
+
+The most dangerous bugs are authorization failures — when user A can access user B's data. I test this with an explicit authorization matrix:
+
+| Endpoint | Owner | Admin | Other User | Unauthenticated |
+|----------|-------|-------|------------|-----------------|
+| GET /api/users/:id | 200 | 200 | 200 (limited) | 401 |
+| PUT /api/users/:id | 200 | 200 | 403 | 401 |
+| DELETE /api/users/:id | 403 | 200 | 403 | 401 |
+| GET /api/users/:id/billing | 200 | 200 | 403 | 401 |
+
+Each cell becomes a test. The matrix makes gaps visible — if there's no test for "other user accesses billing," that's a gap worth filling.
+
+```typescript
+test('non-owner cannot access billing details', async ({ request }) => {
+  const response = await request.get('/api/users/other-user-id/billing', {
+    headers: { Authorization: `Bearer ${regularUserToken}` },
+  });
+  expect(response.status()).toBe(403);
+});
+```
+
+## Error Response Consistency
+
+APIs often have inconsistent error formats. One endpoint returns `{ error: "Not found" }`, another returns `{ message: "Resource not found", code: "NOT_FOUND" }`. This makes frontend error handling fragile.
+
+I test that all error responses follow the same shape:
+
+```typescript
+const errorEndpoints = [
+  { method: 'GET', path: '/api/users/nonexistent', expectedStatus: 404 },
+  { method: 'POST', path: '/api/users', data: {}, expectedStatus: 422 },
+  { method: 'DELETE', path: '/api/admin/users/1', expectedStatus: 403 },
+];
+
+for (const { method, path, data, expectedStatus } of errorEndpoints) {
+  test(`${method} ${path} returns consistent error format`, async ({ request }) => {
+    const response = await request[method.toLowerCase()](path, { data });
+    expect(response.status()).toBe(expectedStatus);
+
+    const body = await response.json();
+    expect(body).toHaveProperty('error');
+    expect(body.error).toHaveProperty('code');
+    expect(body.error).toHaveProperty('message');
+    expect(typeof body.error.message).toBe('string');
+  });
+}
+```
+
+## Performance Baselines
+
+You don't need a load testing tool to catch performance regressions. Simple response time assertions in your existing test suite work surprisingly well:
+
+```typescript
+test('search endpoint responds within 500ms', async ({ request }) => {
+  const start = performance.now();
+  const response = await request.get('/api/search?q=test&limit=20');
+  const duration = performance.now() - start;
+
+  expect(response.status()).toBe(200);
+  expect(duration).toBeLessThan(500);
+});
+```
+
+When a developer accidentally removes a database index or adds an N+1 query, this test catches it before it ships. It's not a substitute for proper load testing, but it's a free early warning system.
+
+## The Tooling Stack
+
+For API testing specifically, I use:
+
+- **Playwright's request context** for tests that also need browser interaction
+- **Bruno** for exploratory testing and sharing request collections with the team
+- **Postman/Newman** when CI needs to run a shared collection maintained by multiple teams
+
+The tool matters less than the strategy. A well-organized Bruno collection with 50 targeted tests beats a Postman workspace with 500 status-code-only checks.
+
+## What I've Learned
+
+The APIs I've tested that had the fewest production incidents shared three traits: consistent error formats, an explicit authorization matrix with tests for every cell, and contract tests that ran on every PR. Everything else is optimization.

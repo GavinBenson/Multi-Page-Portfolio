@@ -1,6 +1,6 @@
 export const meta = {
-  title: 'QA Fundamentals: Part 2 — Principles, Processes, and Roles',
-  description: 'A closer look at the principles guiding quality assurance and how QA fits across each phase of the SDLC.',
+  title: 'QA Fundamentals: Writing Test Cases That Actually Find Bugs',
+  description: 'How to design test cases using equivalence partitioning, boundary analysis, and decision tables — techniques that find more bugs with fewer tests.',
   category: 'QA',
   readTime: '8 min',
   date: '2025-01-11',
@@ -8,72 +8,118 @@ export const meta = {
 
 # {meta.title}
 
-Quality Assurance (QA) is the cornerstone of delivering reliable and user-friendly software. This article explores the fundamental principles of QA, the processes it entails, and the roles QA professionals play in the software development life cycle (SDLC).
+Anyone can write test cases. The difference between a junior QA engineer and a senior one is how many bugs their tests find per test written. The secret isn't writing more tests — it's writing smarter ones using test design techniques that systematically target where bugs hide.
 
-## Quality? Assurance? What's the difference?
+## Why Random Testing Fails
 
-**Quality** refers to how well a product meets customer needs and expectations in terms of functionality, design, reliability, durability, and cost. In software development, this means delivering a product that works as intended, providing value to the user.
+Most people start testing by trying obvious inputs: enter a valid email, click submit, check the result. This catches maybe 20% of the bugs. The other 80% live in the gaps — what happens at the boundaries, what happens with unexpected combinations, what happens when things are empty or null.
 
-**Assurance** is the guarantee that the product will perform as expected without issues, adhering to defined requirements and standards.
+Test design techniques are systematic methods for choosing inputs that maximize your chances of finding bugs while minimizing the number of tests you need to write. Three techniques cover most real-world testing.
 
-## What is Quality Assurance?
+## Equivalence Partitioning
 
-QA is the practice of ensuring that software products meet predefined quality standards and fulfill user expectations. It encompasses systematic activities designed to monitor and improve the development process, preventing defects before they occur.
+The core idea: inputs that should be handled the same way belong to the same partition. You only need one test per partition because if one value in the group works, they all should. If one fails, they all should.
 
-Key objectives of QA include:
+**Example:** An age field that accepts values 18-65 for insurance eligibility.
 
-- **Defining Standards:** Establishing benchmarks for functionality, usability, and performance.
-- **Preventing Defects:** Identifying potential issues early in the development cycle.
-- **Enhancing User Confidence:** Delivering reliable software that meets end-user needs.
+The partitions are:
+- **Valid:** 18-65 (any value here should work the same)
+- **Too young:** 0-17 (any value here should be rejected the same way)
+- **Too old:** 66+ (same rejection behavior)
+- **Invalid:** negative numbers, non-numeric input, empty
 
-## The Principles of QA
+Instead of testing ages 18, 19, 20, 21... through 65, you test one value from each partition:
 
-QA is guided by several core principles that ensure effective outcomes:
+| Partition | Test Value | Expected Result |
+|-----------|-----------|-----------------|
+| Valid | 30 | Accepted |
+| Too young | 10 | Rejected: "Must be 18 or older" |
+| Too old | 70 | Rejected: "Must be 65 or younger" |
+| Negative | -1 | Rejected: "Invalid age" |
+| Non-numeric | "abc" | Rejected: "Must be a number" |
+| Empty | "" | Rejected: "Age is required" |
 
-1. **Customer-Centric Approach:**
-   - Prioritizing user requirements and expectations.
-   - Ensuring the final product aligns with real-world needs.
-2. **Proactive Prevention:**
-   - Emphasizing early detection and resolution of potential issues.
-   - Integrating quality practices at each development stage.
-3. **Process-Oriented Mindset:**
-   - Focusing on the methodology and tools used to create the software.
-   - Continuously improving processes to enhance efficiency and output.
-4. **Collaboration and Communication:**
-   - Promoting teamwork across QA, development, and other stakeholders.
-   - Ensuring transparency and shared responsibility for quality.
+Six tests instead of sixty-five, and they cover every meaningful category of input.
 
-## QA in the Software Development Life Cycle (SDLC)
+## Boundary Value Analysis
 
-As QA professionals, our role spans every phase of this process to ensure the final product meets high-quality standards.
+Bugs cluster at the edges. Off-by-one errors are the most common bug in software, and boundary analysis is designed specifically to catch them.
 
-1. **Requirement Analysis:**
-   - Verifies that requirements are clear, consistent, and testable.
-   - Collaborates with stakeholders to identify potential risks.
-2. **Design Phase:**
-   - Reviews design documents for alignment with requirements.
-   - Identifies areas that require specific testing strategies.
-3. **Development Phase:**
-   - Works alongside developers to ensure coding standards are followed.
-   - Implements unit and integration testing to catch early defects.
-4. **Testing Phase:**
-   - Conducts functional, non-functional, and regression testing.
-   - Ensures thorough coverage of all requirements.
-5. **Deployment and Maintenance:**
-   - Validates the readiness of the software for production.
-   - Monitors performance and addresses post-release issues.
+For our age field (18-65), the boundaries are:
 
-## The Role of QA Professionals
+| Value | Expected | What It Catches |
+|-------|----------|-----------------|
+| 17 | Rejected | Off-by-one at lower bound |
+| 18 | Accepted | Lower bound works |
+| 19 | Accepted | Just above lower bound |
+| 64 | Accepted | Just below upper bound |
+| 65 | Accepted | Upper bound works |
+| 66 | Rejected | Off-by-one at upper bound |
 
-QA professionals are key players in the development process, bridging the gap between technical implementation and user satisfaction. Their responsibilities include:
+The classic bug this catches: a developer writes `if (age > 18)` instead of `if (age >= 18)`, rejecting exactly 18-year-olds. Without boundary tests, you'd never notice — your test with age 30 would pass fine.
 
-- **Creating Test Plans:** Developing comprehensive strategies to validate requirements.
-- **Executing Tests:** Performing manual or automated testing to identify defects.
-- **Documenting Issues:** Logging bugs, tracking resolutions, and providing detailed reports.
-- **Advocating for Quality:** Collaborating with developers to resolve issues and improve processes.
+Combine this with equivalence partitioning. The partitions tell you which categories to test. The boundaries tell you exactly which values within those categories are most likely to expose bugs.
 
-Beyond technical tasks, QA professionals act as champions of quality, ensuring that user needs remain a priority throughout development.
+## Decision Tables
 
-## Conclusion
+When a feature has multiple inputs that interact with each other, decision tables map every combination to an expected outcome. They're especially powerful for business rules.
 
-QA is not just about finding bugs; it's about building confidence in the software and ensuring that it meets both user expectations and business requirements. Whether you're a beginner or an experienced QA professional, understanding these fundamentals is key to success.
+**Example:** A shipping calculator with two inputs — membership tier and order total:
+- Free shipping: Gold members always, Silver members over $50, Regular members over $100
+- Standard shipping: $5.99 otherwise
+
+| # | Tier | Order Total | Expected Shipping |
+|---|------|------------|-------------------|
+| 1 | Gold | $30 | Free |
+| 2 | Gold | $75 | Free |
+| 3 | Gold | $150 | Free |
+| 4 | Silver | $30 | $5.99 |
+| 5 | Silver | $75 | Free |
+| 6 | Silver | $150 | Free |
+| 7 | Regular | $30 | $5.99 |
+| 8 | Regular | $75 | $5.99 |
+| 9 | Regular | $150 | Free |
+
+Nine tests cover every meaningful combination. Without the table, it's easy to miss cases — like a Silver member at exactly $50 (boundary!) or a Regular member at $100. The table forces completeness.
+
+## State Transition Testing
+
+Some features behave differently based on what happened before. An order that's "Pending" can be "Cancelled," but a "Shipped" order can't. State transition diagrams map valid and invalid transitions.
+
+```
+[Pending] --pay--> [Paid] --ship--> [Shipped] --deliver--> [Delivered]
+    |                 |                                          |
+    +---cancel--->  [Cancelled]                              [Returned]
+                      ^                                          |
+                      +--------return (within 30 days)-----------+
+```
+
+Test cases from this diagram:
+
+- **Valid paths:** Pending → Paid → Shipped → Delivered (happy path)
+- **Valid paths:** Pending → Cancelled (early cancel)
+- **Valid paths:** Delivered → Returned (within 30 days)
+- **Invalid transitions:** Shipped → Cancelled (should be rejected)
+- **Invalid transitions:** Cancelled → Paid (should be rejected)
+- **Boundary:** Return attempted on day 30 (accepted) vs day 31 (rejected)
+
+State transition testing catches bugs where the system allows impossible operations — like re-activating a cancelled subscription or shipping an already-delivered order.
+
+## Putting It Together
+
+In practice, I combine these techniques:
+
+1. **Start with equivalence partitioning** to identify the categories of inputs.
+2. **Apply boundary analysis** to each partition edge.
+3. **Build decision tables** when multiple inputs interact.
+4. **Map state transitions** for workflow-based features.
+
+For the age field alone, this gives me about 10 targeted test cases instead of either 3 (too few — misses boundary bugs) or 100 (too many — wastes time testing the same partition).
+
+## Real-World Application
+
+These techniques aren't academic exercises. Last quarter, I used decision table testing on a permissions system and found that admins couldn't delete users who had pending invitations — a combination nobody had tested because the individual features worked fine. The bug had been in production for months.
+
+Boundary analysis caught an off-by-one in a pagination endpoint: requesting page 0 returned the same results as page 1 instead of an error, which broke the frontend's "no results" detection.
+
+The test design technique doesn't need to be formal or documented in a matrix. What matters is the thinking — systematically asking "where are the edges?" and "what combinations haven't I tried?" That habit finds more bugs in one afternoon than weeks of random clicking.
