@@ -3,10 +3,10 @@ export const palettes = {
   validated: {
     name: 'Validated',
     dark: {
-      bg: '#09090b',
-      surface: '#18181b',
-      textPrimary: '#fafafa',
-      textSecondary: '#a1a1aa',
+      bg: '#070a13',
+      surface: '#1e293b',
+      textPrimary: '#f1f5f9',
+      textSecondary: '#94a3b8',
       accent: '#10b981',
       accentSecondary: '#6366f1',
     },

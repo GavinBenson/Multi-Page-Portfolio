@@ -6,10 +6,10 @@
 }
 
 :root {
-  --bg: #09090b;
-  --surface: #18181b;
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
+  --bg: #070a13;
+  --surface: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
   --accent: #10b981;
   --accent-secondary: #6366f1;
   --accent-glow: rgba(16, 185, 129, 0.15);
