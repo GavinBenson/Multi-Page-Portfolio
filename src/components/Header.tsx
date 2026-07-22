@@ -42,7 +42,7 @@ export default function Header() {
                 </li>
               ))}
               <li
-                className="h-6 border-l"
+                className="h-4 border-l"
                 style={{ borderColor: 'var(--text-secondary)', opacity: 0.3 }}
               />
               <li>
