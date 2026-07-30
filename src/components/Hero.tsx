@@ -53,11 +53,7 @@ export default function Hero() {
         >
           QA Engineer and Scrum Master at an Inc. 5000 company, specializing in{' '}
           <strong style={{ color: 'var(--accent-secondary)' }}>end-to-end test strategy</strong>{' '}
-          across SaaS, API, database, and mobile platforms. I bridge technical
-          execution and team leadership to ship high-quality software — and I
-          helped build the{' '}
-          <strong style={{ color: 'var(--accent-secondary)' }}>automation practice</strong>{' '}
-          that&apos;s still running today.
+          across SaaS, API, database, and mobile platforms.
         </motion.p>
 
         <motion.div variants={fadeUp} className="flex gap-4 mt-2">
