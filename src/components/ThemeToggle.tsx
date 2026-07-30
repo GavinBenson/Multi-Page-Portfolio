@@ -52,7 +52,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
   return (
     <button
       onClick={cycleTheme}
-      className={`w-4 h-4 cursor-pointer transition-colors duration-200 leading-none p-0 translate-y-1 ${className}`}
+      className={`w-4 h-4 flex items-center justify-center cursor-pointer transition-colors duration-200 leading-none p-0 ${className}`}
       style={{ color: 'var(--text-secondary)' }}
       aria-label={label}
       title={label}
